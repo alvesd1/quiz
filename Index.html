@@ -15,6 +15,7 @@
         .btn { margin-top: 20px; padding: 10px 20px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px; }
         .btn:hover { background-color: #218838; }
         #score { font-size: 22px; font-weight: bold; margin-top: 20px; }
+        .feedback { margin-top: 15px; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -100,16 +101,37 @@ function loadQuestion() {
 }
 
 function checkAnswer(selected) {
-    if (selected === questions[currentQuestion].answer) {
+    const quiz = document.getElementById("quiz");
+    const q = questions[currentQuestion];
+    
+    // Cria um feedback para mostrar se a resposta foi correta ou errada
+    const feedbackDiv = document.createElement("div");
+    feedbackDiv.classList.add("feedback");
+
+    if (selected === q.answer) {
         score++;
+        feedbackDiv.innerHTML = `<p><b>Correto!</b></p>`;
+        feedbackDiv.style.color = "green";
+    } else {
+        feedbackDiv.innerHTML = `<p><b>Errado!</b><br>A resposta correta é: <span style="color: blue;">${q.answer}</span></p>`;
+        feedbackDiv.style.color = "red";
     }
-    nextQuestion();
+
+    quiz.appendChild(feedbackDiv);
+
+    // Desabilita a seleção de opções após a resposta
+    const options = document.querySelectorAll(".option");
+    options.forEach(option => option.onclick = null);
+
+    // Exibe o botão de próxima pergunta após feedback
+    document.getElementById("nextBtn").style.display = "inline-block";
 }
 
 function nextQuestion() {
     currentQuestion++;
     if (currentQuestion < questions.length) {
         loadQuestion();
+        document.getElementById("nextBtn").style.display = "none";
     } else {
         document.getElementById("quiz").innerHTML = "<h3>Fim do quiz!</h3>";
         document.getElementById("score").innerText = `${playerName}, você acertou ${score} de ${questions.length} perguntas!`;
@@ -134,7 +156,6 @@ function sendEmail(name, score) {
             alert("Erro ao enviar e-mail: " + JSON.stringify(error));
         });
 }
-
 </script>
 
 </body>
